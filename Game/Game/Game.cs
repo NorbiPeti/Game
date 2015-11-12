@@ -39,7 +39,7 @@ namespace Game
         public static void QuitGame()
         {
             InGame = false;
-            Players.Clear();
+            Players.ForEach(a => a.Kill(null));
             CurrentPlayer = null;
         }
     }

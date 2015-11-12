@@ -101,6 +101,8 @@ namespace Game
 
         public void PlayerMove(object sender, PlayerMoveEventArgs e)
         {
+            if (Game.CurrentPlayer != null && e.Player.Name == Game.CurrentPlayer.Name)
+                return;
             Gr.FillRectangle(Brushes.Black, e.From.X - AvatarSize, e.From.Y - AvatarSize, 2 * AvatarSize, 2 * AvatarSize);
             Gr.FillRectangle(Brushes.Blue, e.To.X - AvatarSize, e.To.Y - AvatarSize, 2 * AvatarSize, 2 * AvatarSize);
         }
@@ -131,7 +133,7 @@ namespace Game
 
         public void PlayerKillEvent(object sender, PlayerKillEventArgs e)
         {
-            Gr.FillRectangle(Brushes.Black, e.Player.Position.X - AvatarSize, e.Player.Position.Y - AvatarSize, 2 * AvatarSize, 2 * AvatarSize);
+            Gr.FillRectangle(Brushes.Black, e.Player.Position.X - Game.CurrentPlayer.Position.X - AvatarSize, e.Player.Position.Y - Game.CurrentPlayer.Position.Y - AvatarSize, 2 * AvatarSize, 2 * AvatarSize);
             flowLayoutPanel1.Controls.RemoveByKey("N" + e.Player.Name);
             flowLayoutPanel1.Controls.RemoveByKey("H" + e.Player.Name);
         }

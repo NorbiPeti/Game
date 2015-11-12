@@ -44,8 +44,8 @@ namespace Game
 
                 Mouse = panel1.PointToClient(Cursor.Position);
 
-                Player player = Game.Players.FirstOrDefault(a => Mouse.X > a.Position.X - AvatarSize && Mouse.X < a.Position.X + AvatarSize
-                      & Mouse.Y > a.Position.Y - AvatarSize && Mouse.Y < a.Position.Y + AvatarSize);
+                Player player = Game.Players.FirstOrDefault(a => Mouse.X > a.Position.X - AvatarSize - Game.CurrentPlayer.Position.X && Mouse.X < a.Position.X + AvatarSize - Game.CurrentPlayer.Position.X
+                      && Mouse.Y > a.Position.Y - AvatarSize - Game.CurrentPlayer.Position.Y && Mouse.Y < a.Position.Y + AvatarSize - Game.CurrentPlayer.Position.Y);
                 hittingplayer = player;
 
                 //Gr.DrawEllipse(Pens.Blue, Mouse.X - CircleRadius, Mouse.Y - CircleRadius, 2 * CircleRadius, 2 * CircleRadius);
@@ -65,11 +65,27 @@ namespace Game
                     Gr.DrawLine(Pens.Blue, Mouse.X, 0, Mouse.X, Mouse.Y - 5);
                     Gr.DrawLine(Pens.Blue, Mouse.X, Mouse.Y + 5, Mouse.X, panel1.Height);
                 }
-                Game.Players.ForEach(a => Gr.FillRectangle(Brushes.Blue, a.Position.X - AvatarSize, a.Position.Y - AvatarSize, 2 * AvatarSize, 2 * AvatarSize));
+                Game.Players.ForEach(a => Gr.FillRectangle(Brushes.Blue, a.Position.X - Game.CurrentPlayer.Position.X - AvatarSize,
+                    a.Position.Y - Game.CurrentPlayer.Position.Y - AvatarSize, 2 * AvatarSize, 2 * AvatarSize));
             }
             catch (ObjectDisposedException)
             {
             }
+
+            if (movekeys == Keys.None)
+                return;
+            Game.Players.ForEach(a => Gr.FillRectangle(Brushes.Black, a.Position.X - Game.CurrentPlayer.Position.X - AvatarSize,
+                a.Position.Y - Game.CurrentPlayer.Position.Y - AvatarSize, 2 * AvatarSize, 2 * AvatarSize));
+            if (movekeys == Keys.Left)
+                Game.CurrentPlayer.Position = new Point(Game.CurrentPlayer.Position.X - 1, Game.CurrentPlayer.Position.Y);
+            if (movekeys == Keys.Right)
+                Game.CurrentPlayer.Position = new Point(Game.CurrentPlayer.Position.X + 1, Game.CurrentPlayer.Position.Y);
+            if (movekeys == Keys.Down)
+                Game.CurrentPlayer.Position = new Point(Game.CurrentPlayer.Position.X, Game.CurrentPlayer.Position.Y + 1);
+            if (movekeys == Keys.Up)
+                Game.CurrentPlayer.Position = new Point(Game.CurrentPlayer.Position.X, Game.CurrentPlayer.Position.Y - 1);
+            Game.Players.ForEach(a => Gr.FillRectangle(Brushes.Blue, a.Position.X - Game.CurrentPlayer.Position.X - AvatarSize,
+                a.Position.Y - Game.CurrentPlayer.Position.Y - AvatarSize, 2 * AvatarSize, 2 * AvatarSize));
         }
 
         private void panel1_Paint(object sender, PaintEventArgs e)
@@ -93,20 +109,42 @@ namespace Game
         {
             if (hittingplayer != null)
             {
-                hittingplayer.Health -= 10; //TODO
+                hittingplayer.Health -= 10;
+                if (hittingplayer.Health <= 0)
+                    hittingplayer.Kill(Game.CurrentPlayer);
             }
         }
 
         public void PlayerSpawn(object sender, PlayerSpawnEventArgs e)
         {
-            flowLayoutPanel1.Controls.Add(e.Player.NameLabel = new Label { Text = e.Player.Name, ForeColor = Color.Blue });
-            flowLayoutPanel1.Controls.Add(e.Player.HealthLabel = new Label { Text = "Health: " + e.Player.Health, ForeColor = Color.Blue });
+            flowLayoutPanel1.Controls.Add(e.Player.NameLabel = new Label { Text = e.Player.Name, ForeColor = Color.Blue, Name = "N" + e.Player.Name });
+            flowLayoutPanel1.Controls.Add(e.Player.HealthLabel = new Label { Text = "Health: " + e.Player.Health, ForeColor = Color.Blue, Name = "H" + e.Player.Name });
         }
 
         public void PlayerStatChange(object sender, PlayerStatChangeEventArgs e)
         {
             e.Player.NameLabel.Text = e.Player.Name;
+            e.Player.NameLabel.Name = "N" + e.Player.Name;
             e.Player.HealthLabel.Text = "Health: " + e.Player.Health;
+            e.Player.HealthLabel.Name = "H" + e.Player.Name;
+        }
+
+        public void PlayerKillEvent(object sender, PlayerKillEventArgs e)
+        {
+            Gr.FillRectangle(Brushes.Black, e.Player.Position.X - AvatarSize, e.Player.Position.Y - AvatarSize, 2 * AvatarSize, 2 * AvatarSize);
+            flowLayoutPanel1.Controls.RemoveByKey("N" + e.Player.Name);
+            flowLayoutPanel1.Controls.RemoveByKey("H" + e.Player.Name);
+        }
+
+        private Keys movekeys = Keys.None;
+        private void Form1_KeyDown(object sender, KeyEventArgs e)
+        {
+            movekeys = e.KeyData;
+        }
+
+        private void Form1_KeyUp(object sender, KeyEventArgs e)
+        {
+            movekeys -= e.KeyData;
         }
     }
 }

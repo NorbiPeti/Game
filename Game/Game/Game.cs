@@ -29,9 +29,9 @@ namespace Game
             var rand = new Random();
             if (SingplePlayer)
             {
-                for (int i = 0; i < 10; i++)
+                for (int i = 0; i < 5; i++)
                 {
-                    Players.Add(new Player(new Point(rand.Next(GameSize.Width), rand.Next(GameSize.Height)), "Bot"));
+                    Players.Add(new Player(new Point(rand.Next(GameSize.Width), rand.Next(GameSize.Height)), "Bot" + (i + 1)));
                 }
             }
         }

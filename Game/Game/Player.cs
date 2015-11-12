@@ -55,6 +55,7 @@ namespace Game
         public event EventHandler<PlayerMoveEventArgs> MoveEvent;
         public event EventHandler<PlayerSpawnEventArgs> SpawnEvent;
         public event EventHandler<PlayerStatChangeEventArgs> ChangeEvent;
+        public event EventHandler<PlayerKillEventArgs> KillEvent;
 
         public Label HealthLabel;
         public Label NameLabel;
@@ -64,9 +65,16 @@ namespace Game
             MoveEvent += Form1.Instance.PlayerMove;
             SpawnEvent += Form1.Instance.PlayerSpawn;
             ChangeEvent += Form1.Instance.PlayerStatChange;
+            KillEvent += Form1.Instance.PlayerKillEvent;
             SpawnEvent(this, new PlayerSpawnEventArgs(this));
             Position = position;
             Name = name;
+        }
+
+        public void Kill(Player killer)
+        {
+            KillEvent(this, new PlayerKillEventArgs(this, killer));
+            Game.Players.Remove(this);
         }
     }
 }

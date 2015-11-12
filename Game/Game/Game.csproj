@@ -54,6 +54,7 @@
     </Compile>
     <Compile Include="Game.cs" />
     <Compile Include="Player.cs" />
+    <Compile Include="PlayerKillEventArgs.cs" />
     <Compile Include="PlayerMoveEventArgs.cs" />
     <Compile Include="PlayerSpawnEventArgs.cs" />
     <Compile Include="PlayerStatChangeEventArgs.cs" />

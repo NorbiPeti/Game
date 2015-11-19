@@ -65,8 +65,14 @@ namespace Game
                     Gr.DrawLine(Pens.Blue, Mouse.X, 0, Mouse.X, Mouse.Y - 5);
                     Gr.DrawLine(Pens.Blue, Mouse.X, Mouse.Y + 5, Mouse.X, panel1.Height);
                 }
-                Game.Players.ForEach(a => Gr.FillRectangle(Brushes.Blue, a.Position.X - Game.CurrentPlayer.Position.X - AvatarSize,
-                    a.Position.Y - Game.CurrentPlayer.Position.Y - AvatarSize, 2 * AvatarSize, 2 * AvatarSize));
+                Game.Players.ForEach(a => (a.Avatar == null) ?
+                Gr.FillRectangle(Brushes.Blue, a.Position.X - Game.CurrentPlayer.Position.X - AvatarSize,
+                    a.Position.Y - Game.CurrentPlayer.Position.Y - AvatarSize, 2 * AvatarSize, 2 * AvatarSize) :
+                    Gr.DrawImage(a.Avatar, new Point
+                    {
+                        X = a.Position.X - Game.CurrentPlayer.Position.X - a.Avatar.Width,
+                        Y = a.Position.Y - Game.CurrentPlayer.Position.Y - a.Avatar.Height
+                    }));
             }
             catch (ObjectDisposedException)
             {
@@ -81,7 +87,7 @@ namespace Game
             if (movekeys == Keys.Right)
                 Game.CurrentPlayer.Position = new Point(Game.CurrentPlayer.Position.X + 1, Game.CurrentPlayer.Position.Y);
             if (movekeys == Keys.Down)
-                Game.CurrentPlayer.Position = new Point(Game.CurrentPlayer.Position.X, Game.CurrentPlayer.Position.Y + 1);
+                Game.CurrentPlayer.Position = new Point(Game.CurrentPlayer.Position.X, Game.CurrentPlayer.Position.Y + 1); //TODO: Avatar
             if (movekeys == Keys.Up)
                 Game.CurrentPlayer.Position = new Point(Game.CurrentPlayer.Position.X, Game.CurrentPlayer.Position.Y - 1);
             Game.Players.ForEach(a => Gr.FillRectangle(Brushes.Blue, a.Position.X - Game.CurrentPlayer.Position.X - AvatarSize,
@@ -96,7 +102,15 @@ namespace Game
 
         private void singleplayerToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Game.NewGame(new Player(new Point(), "Player"), true, panel1.Size);
+            Image image = null;
+            try
+            {
+                image = Image.FromFile("avatar");
+            }
+            catch
+            {
+            }
+            Game.NewGame(new Player(new Point(), "Player", image), true, panel1.Size);
         }
 
         public void PlayerMove(object sender, PlayerMoveEventArgs e)

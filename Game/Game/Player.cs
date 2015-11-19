@@ -52,6 +52,7 @@ namespace Game
                 position = value;
             }
         }
+        public Image Avatar { get; private set; }
         public event EventHandler<PlayerMoveEventArgs> MoveEvent;
         public event EventHandler<PlayerSpawnEventArgs> SpawnEvent;
         public event EventHandler<PlayerStatChangeEventArgs> ChangeEvent;
@@ -59,7 +60,7 @@ namespace Game
 
         public Label HealthLabel;
         public Label NameLabel;
-        public Player(Point position, string name)
+        public Player(Point position, string name, Image avatar)
         {
             Health = 100;
             MoveEvent += Form1.Instance.PlayerMove;
@@ -69,6 +70,7 @@ namespace Game
             SpawnEvent(this, new PlayerSpawnEventArgs(this));
             Position = position;
             Name = name;
+            Avatar = avatar;
         }
 
         public void Kill(Player killer)

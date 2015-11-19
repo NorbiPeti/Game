@@ -31,7 +31,7 @@ namespace Game
             {
                 for (int i = 0; i < 5; i++)
                 {
-                    Players.Add(new Player(new Point(rand.Next(GameSize.Width), rand.Next(GameSize.Height)), "Bot" + (i + 1)));
+                    Players.Add(new Player(new Point(rand.Next(GameSize.Width), rand.Next(GameSize.Height)), "Bot" + (i + 1), null));
                 }
             }
         }

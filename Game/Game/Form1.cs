@@ -65,14 +65,8 @@ namespace Game
                     Gr.DrawLine(Pens.Blue, Mouse.X, 0, Mouse.X, Mouse.Y - 5);
                     Gr.DrawLine(Pens.Blue, Mouse.X, Mouse.Y + 5, Mouse.X, panel1.Height);
                 }
-                Game.Players.ForEach(a => (a.Avatar == null) ?
-                Gr.FillRectangle(Brushes.Blue, a.Position.X - Game.CurrentPlayer.Position.X - AvatarSize,
-                    a.Position.Y - Game.CurrentPlayer.Position.Y - AvatarSize, 2 * AvatarSize, 2 * AvatarSize) :
-                    Gr.DrawImage(a.Avatar, new Point
-                    {
-                        X = a.Position.X - Game.CurrentPlayer.Position.X - a.Avatar.Width,
-                        Y = a.Position.Y - Game.CurrentPlayer.Position.Y - a.Avatar.Height
-                    }));
+                //Game.Players.ForEach(a => (a.Avatar == null) ?
+                Game.Players.ForEach(a => DrawPlayer(a, false));
             }
             catch (ObjectDisposedException)
             {
@@ -80,8 +74,7 @@ namespace Game
 
             if (movekeys == Keys.None)
                 return;
-            Game.Players.ForEach(a => Gr.FillRectangle(Brushes.Black, a.Position.X - Game.CurrentPlayer.Position.X - AvatarSize,
-                a.Position.Y - Game.CurrentPlayer.Position.Y - AvatarSize, 2 * AvatarSize, 2 * AvatarSize));
+            Game.Players.ForEach(a => DrawPlayer(a, true));
             if (movekeys == Keys.Left)
                 Game.CurrentPlayer.Position = new Point(Game.CurrentPlayer.Position.X - 1, Game.CurrentPlayer.Position.Y);
             if (movekeys == Keys.Right)
@@ -90,8 +83,7 @@ namespace Game
                 Game.CurrentPlayer.Position = new Point(Game.CurrentPlayer.Position.X, Game.CurrentPlayer.Position.Y + 1); //TODO: Avatar
             if (movekeys == Keys.Up)
                 Game.CurrentPlayer.Position = new Point(Game.CurrentPlayer.Position.X, Game.CurrentPlayer.Position.Y - 1);
-            Game.Players.ForEach(a => Gr.FillRectangle(Brushes.Blue, a.Position.X - Game.CurrentPlayer.Position.X - AvatarSize,
-                a.Position.Y - Game.CurrentPlayer.Position.Y - AvatarSize, 2 * AvatarSize, 2 * AvatarSize));
+            Game.Players.ForEach(a => DrawPlayer(a, false));
         }
 
         private void panel1_Paint(object sender, PaintEventArgs e)
@@ -118,7 +110,7 @@ namespace Game
             if (Game.CurrentPlayer != null && e.Player.Name == Game.CurrentPlayer.Name)
                 return;
             Gr.FillRectangle(Brushes.Black, e.From.X - AvatarSize, e.From.Y - AvatarSize, 2 * AvatarSize, 2 * AvatarSize);
-            Gr.FillRectangle(Brushes.Blue, e.To.X - AvatarSize, e.To.Y - AvatarSize, 2 * AvatarSize, 2 * AvatarSize);
+            Gr.FillRectangle(Brushes.Blue, e.To.X - AvatarSize, e.To.Y - AvatarSize, 2 * AvatarSize, 2 * AvatarSize); //TODO
         }
 
         private void panel1_Click(object sender, EventArgs e)
@@ -161,6 +153,27 @@ namespace Game
         private void Form1_KeyUp(object sender, KeyEventArgs e)
         {
             movekeys -= e.KeyData;
+        }
+
+        public void DrawPlayer(Player player, bool clear)
+        {
+            if (player.Avatar == null)
+                Gr.FillRectangle((clear) ? Brushes.Black : Brushes.Blue, player.Position.X - Game.CurrentPlayer.Position.X - AvatarSize,
+                    player.Position.Y - Game.CurrentPlayer.Position.Y - AvatarSize, 2 * AvatarSize, 2 * AvatarSize);
+            else
+            {
+                if (!clear)
+                    Gr.DrawImage(player.Avatar, new Point
+                    {
+                        X = player.Position.X - Game.CurrentPlayer.Position.X - player.Avatar.Width,
+                        Y = player.Position.Y - Game.CurrentPlayer.Position.Y - player.Avatar.Height
+                    });
+                else
+                    Gr.FillRectangle(Brushes.Black,
+                        player.Position.X - Game.CurrentPlayer.Position.X - player.Avatar.Width,
+                        player.Position.Y - Game.CurrentPlayer.Position.Y - player.Avatar.Height,
+                        player.Avatar.Width, player.Avatar.Height);
+            }
         }
     }
 }
